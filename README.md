@@ -15,31 +15,45 @@
 
 ConfigMap takes a configuration from a source and mounts it into running containers as a volume.
 For setting ConfigMap use this command after creating the cluster:
-```kubectl config current-context```
+```
+kubectl config current-context
+```
 
 ConfigMap takes a config from a source and **mounts** it into running containers as a **volume**.
 Configs can be injected from different sources:
 - from a file, multiple files or directory:
 
-  ```kubectl create cm my-config --from-file=prometheus-conf.yml```
+  ```
+    kubectl create cm my-config --from-file=prometheus-conf.yml
   
-  ```kubectl create cm my-config --from-file=prometheus-conf.yml  --from-file=file.yml``` 
+    kubectl create cm my-config --from-file=prometheus-conf.yml  --from-file=file.yml
   
-  ```kubectl create cm my-config --from-file=directory```
+    kubectl create cm my-config --from-file=directory
+  ```
   
   Verify:
-  ```kubectl exec -it alpine -- ls -l /etc/config```
+
+  ```
+    kubectl exec -it alpine -- ls -l /etc/config
   
-  ```kubectl describe cm my-config```
+    kubectl describe cm my-config```
 
 - from key-value literals:
-  ```kubectl create cm my-config --from-literal=key=value```
+  ```
+    kubectl create cm my-config --from-literal=key=value
+  ```
 
   Verify:
-  ```kubectl exec -it alpine -- cat /etc/config/key```
+
+  ```
+  kubectl exec -it alpine -- cat /etc/config/key
+    ```
 
  - from env file:
-   ```kubectl create cm my-config --from-env-file=env.yml```
+
+   ```
+   kubectl create cm my-config --from-env-file=env.yml
+    ```
 
   With **env.valueFrom.configMapKeyRef** syntax, we need to specify each ConfigMap key separately. 
   That gives us control over the scope and the relation with the names of container variables.
@@ -72,3 +86,4 @@ When working with a large value, we can start with the pipe sign (|). Kubernetes
      
 **Make sure** configMap IS NOT defined in the same file as the objects that mount it.
 
+![Diagram](images/diagram1.png)
