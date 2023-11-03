@@ -9,7 +9,8 @@
 4. Deployments
 5. Ingress
 6. Volumes
-7. [ConfigMaps](## ConfigMaps)
+7. [ConfigMaps](#ConfigMaps)
+8. [Secrets](#Secrets)
 
 ## ConfigMaps
 
@@ -85,5 +86,54 @@ When working with a large value, we can start with the pipe sign (|). Kubernetes
  to add it on the same level (indentation), as the other prometheus.yml.      
      
 **Make sure** configMap IS NOT defined in the same file as the objects that mount it.
+
+
+## Secrets
+
+Check the secrets in the cluster:
+
+```
+kubectl get secrets
+
+kubectl get secret my-creds -o json
+
+```
+
+Kubernetes automatically creates "default-token-.." secret that is used to access the API and modifies the Pods to use this secret.
+
+Secrets can be generic, docker-registry (to provide kubelet with credentials it needs to pull images from private registries)
+or tls (for storing certificates).
+
+Secrets are abse64 encoded. To decode:
+
+```
+kubectl get secret my-creds \
+    -o jsonpath="{.data.username}" \
+    | base64 --decode
+
+```
+
+Secrets are almost the same as ConfigMaps. The main difference is that the secret files are created in tmpfs.
+Secrets are constructed as in-memory files, thus leaving no trace on the host’s files system.
+
+Almost everything Kubernetes needs is stored in etcd. That includes Secrets. The problem is that they are stored as 
+plain text. Anyone with access to etcd has access to Kubernetes Secrets. We can limit the access to etcd, but that’s not the end of our troubles.
+
+
+#### How to Secure?
+We need to take additional precautions to protect ourselves. That might include, but is not limited to, the following actions:
+
+* Secure the communication between etcd instances with SSL/TLS.
+
+* Limit the access to etcd and wipe the disk or partitions that were used by it.
+
+* Do not define Secrets in YAML files stored in a repository. Create Secrets through ad-hoc kubectl create secret commands. If possible, delete commands history afterward.
+
+* Make sure that the applications using Secrets do not accidentally output them to logs or transmit them to other applications.
+
+* Create policies that allow only trusted users to retrieve secrets. However, you should be aware that even with proper policies in place, any user with permissions to run a Pod could mount a Secret and read it.
+
+
+
 
 ![Diagram](images/diagram1.png)
