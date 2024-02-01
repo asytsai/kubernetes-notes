@@ -3,7 +3,7 @@
 
 ## Content
 
-1. Pods
+1. [Pods](#pods)
 2. ReplicaSets
 3. Services
 4. Deployments
@@ -11,6 +11,45 @@
 6. Volumes
 7. [ConfigMaps](#ConfigMaps)
 8. [Secrets](#Secrets)
+
+## Pods
+
+A Pod is a way to represent a running process in a cluster. A Pod encapsulates one or more containers. It provides a unique network IP, attaches storage resources, and decides how containers should run. Everything in a Pod is tightly coupled.
+
+```
+kubectl create -f db.yml
+
+kubectl get pods
+
+kubectl get pods -o wide
+
+kubectl get pods -o json
+
+kubectl get pods -o yaml
+
+kubectl describe pod db
+```
+
+### Anatomy of a Pod
+
+Pods are designed to run multiple cooperative processes that should act as a cohesive unit. Those processes are wrapped in containers.
+
+All the containers that form a Pod are running on the same machine. A Pod cannot be split across multiple nodes.
+
+All the processes (containers) inside a Pod share the same set of resources, and they can communicate with each other through localhost. One of those shared resources is storage.
+
+A volume (think of it as a directory with shareable data) defined in a Pod can be accessed by all the containers, therefore allowing them all to share the same data.
+
+The get command that filters the output and retrieves only the names of the containers:
+
+```
+kubectl get -f go-demo-2.yml \
+    -o jsonpath="{.spec.containers[*].name}"
+```
+
+Note: Do not create Pods by themselves. Let one of the controllers create Pods for you.
+
+
 
 ## ConfigMaps
 
